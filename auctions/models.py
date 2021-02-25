@@ -4,7 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    person = models.CharField(max_length=64)
     #bids = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="publisher")
     
     def __str__(self):
