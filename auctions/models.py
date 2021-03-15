@@ -4,38 +4,44 @@ from django.db import models
 
 
 class User(AbstractUser):
-    person = models.CharField(max_length=64)
-    #bids = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="publisher")
-    
+    pass
+
     def __str__(self):
-        return f"{self.name}"
+        return self.gamertag
+    #bids = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="publisher")
+
+class Person(models.Model):
+    gamertag = models.CharField(max_length=64)
+    passkey = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.gamertag} {self.passkey}"
 
 class Bid(models.Model):
     price = models.IntegerField() 
     num = models.IntegerField()
-    #time = models.DateField()
-    highestBidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="winner")
+    highestBidder = models.CharField(max_length=50, null=True)
 
     def __str__(self):
-        return f"${self.price}: with {self.num} bids and highest bidder is {self.highestBidder} with {self.time} remaining"
+        return f"${self.price}: with {self.num} bids and highest bidder is [error]"
 
 class Comment(models.Model):
-    comment = models.CharField(max_length=64)
-    publisher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="publisher")
-    
+    comment = models.CharField(max_length=1000)
+    publisher = models.CharField(max_length=64, null=True)
 
     def __str__(self):
-        return f"{self.publisher}: {self.comment} for {self.listing}"
+        return f"{self.publisher}: {self.comment}"
 
 class Listing(models.Model):
     title = models.CharField(max_length=50)
+    businessMan = models.CharField(max_length=50, null=True)
+    category = models.CharField(max_length=50)
     description = models.CharField(max_length=100000)
     image = models.URLField(max_length=2000)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller")
-    currentBid = models.ForeignKey(Bid, on_delete=models.CASCADE, related_name="bid")
-    comments = models.ManyToManyField(Comment, blank=True, related_name="post_comments")
-
-
+    currentBid = models.ForeignKey(Bid, blank=True, null=True, on_delete=models.CASCADE, related_name="bid")
+    comments = models.ForeignKey(Comment, blank=True, on_delete=models.CASCADE, related_name="post_comments")
+    
+    
     def __str__(self):
         return f"{self.title}: {self.description} by {self.seller} at {self.currentBid}"
 

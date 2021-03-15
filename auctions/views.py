@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 
-from .models import User, Listing
+from .models import User, Listing, Person, Comment, Bid
 
 
 def index(request):
@@ -49,6 +49,15 @@ def register(request):
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
+
+        #save person in Person model
+        """
+        person = Person()
+        person.gamertag = username
+        person.passkey = password
+        person.save()
+        """
+
         if password != confirmation:
             return render(request, "auctions/register.html", {
                 "message": "Passwords must match."
@@ -75,6 +84,29 @@ def newListing(request):
         bid = request.POST["bid"]
         image = request.POST["photo"]
         category = request.POST["category"]
+        #maybe you still need to create a user somehow
+
+        comments = Comment()
+        comments.comment = "Leave any comments below and ill reply"
+        comments.publisher = User.username
+        comments.save()
+
+        initialBid = Bid()
+        initialBid.price = bid
+        initialBid.num = 1
+        initialBid.highestBidder = User.username
+        initialBid.save()
+
+        product = Listing()
+        product.title = title
+        product.category = category
+        product.description = description
+        product.businessMan = User.username
+        product.currentBid = initialBid
+        product.comments = comments
+        product.image = image
+        product.category = category
+        product.save()
     
     return render(request, "auctions/new.html") #right when they cllick the button
 
